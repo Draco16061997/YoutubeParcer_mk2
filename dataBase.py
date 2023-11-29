@@ -1,6 +1,6 @@
 import sqlite3
 import get
-
+import config
 
 class dataBase():
     def __init__(self, pathDb):
@@ -59,10 +59,10 @@ class dataBase():
             key = key.replace("@SynoEAStream", "")
             key = key.replace("@SynoResource", "")
 
-            if get.getId(nameJurn) != None:
-                nameJurn = get.getId(nameJurn)
-            if get.getId(nameDir) != None:
-                nameDir = get.getId(nameDir)
+            if get.getId(nameJurn, config.list) != None:
+                nameJurn = get.getId(nameJurn, config.list)
+            if get.getId(nameDir, config.list) != None:
+                nameDir = get.getId(nameDir, config.list)
             if get.getId(typVideo) != None:
                 typVideo = get.getId(typVideo)
 
