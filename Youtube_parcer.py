@@ -1,13 +1,12 @@
-import json
+
 from googleapiclient.discovery import build
 import google.oauth2
-import sqlite3
+
 import config
 
 class Youtube():
-    def __init__(self, API_KEY, pathDb, ID_CHANEL):
+    def __init__(self, API_KEY, ID_CHANEL):
         self.API_KEY = API_KEY
-        self.pathDb = pathDb
         self.ID_CHANEL = ID_CHANEL
 
     def getlist(self):
