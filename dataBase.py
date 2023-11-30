@@ -1,4 +1,6 @@
 import sqlite3
+
+import folderParcer
 import get
 import config
 
@@ -77,9 +79,6 @@ class dataBase():
 
 
 if __name__ == '__main__':
-    path = '/Users/mikita/Main/PythonProjects/YoutubeParcer_mk2/test.db'
 
-    db = dataBase(path)
-    db.createTableYoutube()
-    db.createTableNAS()
+    pass
 
