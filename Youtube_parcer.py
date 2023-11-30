@@ -46,8 +46,8 @@ class Youtube():
 
 
 if __name__ == '__main__':
-    pass
-    # do = Youtube(config.API_KEY2, config.db, config.NM)
-    #
-    # for i in do.getlist():
-    #     print(i)
+    # pass
+    do = Youtube(config.API_KEY2, config.NM)
+
+    for i in do.getlist():
+        print(i)
