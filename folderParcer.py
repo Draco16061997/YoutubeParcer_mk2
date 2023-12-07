@@ -39,12 +39,5 @@ class Folder():
 
 
 if __name__ =='__main__':
-    # pass
-    folder = Folder(config.path)
-    # print(folder.getListFiles(config.path))
+    pass
 
-    # for i in folder.WalkFiles():
-    #     print(i)
-
-    for i in folder.getListFiles():
-        print(i)
