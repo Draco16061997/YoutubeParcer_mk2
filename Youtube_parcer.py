@@ -1,7 +1,4 @@
-
 from googleapiclient.discovery import build
-import google.oauth2
-
 import config
 
 class Youtube():
