@@ -116,7 +116,7 @@ class dataBase():
             if nameDir != None:
                 nameDir = get.getId(nameDir,config.user)
             if typVideo != None:
-                typVideo = get.getId(typVideo,config.types)
+                typVideo = get.getId(typVideo, config.products)
             if key == "v" or key == '+v':
                 key = get.getId(key, config.typeRels)
 
