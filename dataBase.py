@@ -1,6 +1,4 @@
 import sqlite3
-import Youtube_parcer
-import folderParcer
 import get
 import config
 
@@ -133,17 +131,6 @@ class dataBase():
 
 
 if __name__ == '__main__':
-    db = dataBase(config.db)
-    do = Youtube_parcer.Youtube(config.API_KEY2, config.DO)
-    nm = Youtube_parcer.Youtube(config.API_KEY2, config.NM)
-    # for i in do.getlist():
-    #     print(i)
-    db.writheBdYoutube(do.getlist())
-    db.writheBdYoutube(nm.getlist())
-    folder = folderParcer.Folder(config.path)
-
-    # print(folder.getListFiles())
-    db.writheBdList(folder.getListFiles())
-    # db.createTables()
+    pass
 
 
