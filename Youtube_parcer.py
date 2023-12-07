@@ -36,7 +36,7 @@ class Youtube():
 
             key = i['id']['videoId']
             #
-            youYubeList.append((dataPublish, title, url, titleChanel, key))
+            youYubeList.append((dataPublish, title, titleChanel, key))
 
         return youYubeList
 
