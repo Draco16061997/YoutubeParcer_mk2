@@ -29,9 +29,9 @@ class Folder():
 
         for i in self.WalkFiles(self.path):
             s = i.replace(".mp4", "")
-            s = s.split('_', 4)
+            s = s.split('_', 5)
             t = len(s)
-            if t == 5:
+            if t == 6:
 
                 self.g.append(s)
 
