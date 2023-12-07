@@ -12,7 +12,7 @@ class Folder():
         self.l = []
         self.g =[]
 
-    WalkFiles(self,current_path=None):
+    def WalkFiles(self,current_path=None):
         if current_path is None:
             current_path = self.path
 
