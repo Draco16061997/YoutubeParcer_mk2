@@ -1,6 +1,8 @@
 import os
 import config
 
+from os.path import getctime
+import datetime
 
 
 class Folder():
@@ -10,7 +12,7 @@ class Folder():
         self.l = []
         self.g =[]
 
-    def WalkFiles(self,current_path=None):
+    WalkFiles(self,current_path=None):
         if current_path is None:
             current_path = self.path
 
@@ -19,7 +21,8 @@ class Folder():
             if os.path.isdir(current_path + '/' + i):
                 self.WalkFiles(current_path + '/' + i)
             else:
-                self.l.append(i)
+
+                self.l.append(datetime.datetime.fromtimestamp(getctime(current_path + '/' + i)).strftime('%Y-%m-%d')+'_'+i)
         return self.l
 
     def getListFiles(self):
@@ -29,7 +32,9 @@ class Folder():
             s = s.split('_', 4)
             t = len(s)
             if t == 5:
+
                 self.g.append(s)
+
         return self.g
 
 
@@ -37,5 +42,9 @@ if __name__ =='__main__':
     # pass
     folder = Folder(config.path)
     # print(folder.getListFiles(config.path))
+
+    # for i in folder.WalkFiles():
+    #     print(i)
+
     for i in folder.getListFiles():
         print(i)
