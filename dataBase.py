@@ -5,10 +5,10 @@ import get
 import config
 
 class dataBase():
-    def __init__(self, pathDb):
+    def __init__(self, pathDb, YoutubeTable, NasTable):
         self.pathDb = pathDb
-        self.table1 = "Youtube"
-        self.table2 = "NAS"
+        self.table1 = YoutubeTable
+        self.table2 = NasTable
 
     def createDb(self, path = None):
         if path == None:
@@ -130,20 +130,59 @@ class dataBase():
             db.commit()
         print(f'UPDATE TABLE {self.table2} ADD {count} RECORDS')
 
+    def ReadBd(self,NameUser = None, FromTable = None, JoinTable = None, dataIn = None, dataOut = None, path = None):
+        if path == None:
+            path = self.pathDb
+
+        if FromTable == None:
+            FromTable = self.table1
+
+        if JoinTable == None:
+            JoinTable = self.table2
+
+
+        # реализация ограничение поиска по периоду дат
+        if dataIn != None and dataOut != None:
+            where = f'WHERE data BETWEEN {dataIn} AND {dataOut}'
+        elif dataIn != None and dataOut != None and NameUser != None:
+            where = f'WHERE NameJurn = {NameUser} OR NameDirector = {NameUser} AND data BETWEEN {dataIn} AND {dataOut}'
+        else:
+            where = ''
+
+
+
+        db = sqlite3.connect(path)
+        c = db.cursor()
+
+        c.execute(f'''SELECT *
+                    FROM {FromTable}
+                    LEFT JOIN {JoinTable} ON {FromTable}.key = {JoinTable}.key
+                    {where} 
+                    LEFT JOIN typeVideo ON VideoStorage.TypeClip =typeVideo.id
+                    LEFT JOIN emploues AS j ON j.id = VideoStorage.NameJurn
+                    LEFT JOIN emploues AS d ON d.id = VideoStorage.NameDirector
+
+                    ORDER BY data DESC''')
+
+        rows = c.fetchall()
+        db.close()
+        return rows
+
 
 
 if __name__ == '__main__':
-    db = dataBase(config.db)
-    do = Youtube_parcer.Youtube(config.API_KEY2, config.DO)
-    nm = Youtube_parcer.Youtube(config.API_KEY2, config.NM)
-    # for i in do.getlist():
-    #     print(i)
-    db.writheBdYoutube(do.getlist())
-    db.writheBdYoutube(nm.getlist())
-    folder = folderParcer.Folder(config.path)
+    # pass
+    db = dataBase(config.db, "YoutubeVideo","VideoStorage")
+    # do = Youtube_parcer.Youtube(config.API_KEY2, config.DO)
+    # nm = Youtube_parcer.Youtube(config.API_KEY2, config.NM)
+    #
+    # db.writheBdYoutube(do.getlist())
+    # db.writheBdYoutube(nm.getlist())
+    # folder = folderParcer.Folder(config.path)
+    #
+    # db.writheBdList(folder.getListFiles())
+    for i in db.ReadBd():
+        print(i)
 
-    # print(folder.getListFiles())
-    db.writheBdList(folder.getListFiles())
-    # db.createTables()
 
 
