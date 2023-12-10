@@ -19,7 +19,6 @@ class dataBase():
         db.commit()
         print("DB OK!")
 
-
     def createTables(self, path = None):
 
         if path == None:
@@ -130,7 +129,20 @@ class dataBase():
             db.commit()
         print(f'UPDATE TABLE {self.table2} ADD {count} RECORDS')
 
-    def ReadBd(self,NameUser = None, FromTable = None, JoinTable = None, dataIn = None, dataOut = None, path = None):
+
+    def getNameTables(self, name, path = None):
+        if path == None:
+            path = self.pathDb
+        db = sqlite3.connect(path)
+        c = db.cursor()
+
+        c.execute(f"PRAGMA table_info({name});")
+
+        end = c.fetchall()
+        db.close()
+        return end
+
+    def ReadBd(self, IndexUser = None, FromTable = None, JoinTable = None, dataIn = None, dataOut = None, path = None):
         if path == None:
             path = self.pathDb
 
@@ -140,12 +152,15 @@ class dataBase():
         if JoinTable == None:
             JoinTable = self.table2
 
+        data = self.getNameTables(FromTable)[0][1]
+
 
         # реализация ограничение поиска по периоду дат
-        if dataIn != None and dataOut != None:
-            where = f'WHERE data BETWEEN {dataIn} AND {dataOut}'
-        elif dataIn != None and dataOut != None and NameUser != None:
-            where = f'WHERE NameJurn = {NameUser} OR NameDirector = {NameUser} AND data BETWEEN {dataIn} AND {dataOut}'
+
+        if dataIn != None and dataOut != None and IndexUser != None:
+            where = f'WHERE VideoStorage.NameJurn = "{IndexUser}" OR VideoStorage.NameDirector = "{IndexUser}" AND {data} BETWEEN "{dataIn}" AND "{dataOut}"'
+        elif dataIn != None and dataOut != None:
+            where = f'WHERE {data} BETWEEN "{dataIn}" AND "{dataOut}"'
         else:
             where = ''
 
@@ -154,13 +169,15 @@ class dataBase():
         db = sqlite3.connect(path)
         c = db.cursor()
 
-        c.execute(f'''SELECT *
+        c.execute(f'''SELECT YoutubeVideo.data, typeVideo.name, YoutubeVideo.chanel, YoutubeVideo.name, j.name, d.name
+
                     FROM {FromTable}
                     LEFT JOIN {JoinTable} ON {FromTable}.key = {JoinTable}.key
-                    {where} 
-                    LEFT JOIN typeVideo ON VideoStorage.TypeClip =typeVideo.id
+                    
+                    LEFT JOIN typeVideo ON {JoinTable}.TypeClip = typeVideo.id
                     LEFT JOIN emploues AS j ON j.id = VideoStorage.NameJurn
                     LEFT JOIN emploues AS d ON d.id = VideoStorage.NameDirector
+                    {where} 
 
                     ORDER BY data DESC''')
 
@@ -181,8 +198,11 @@ if __name__ == '__main__':
     # folder = folderParcer.Folder(config.path)
     #
     # db.writheBdList(folder.getListFiles())
-    for i in db.ReadBd():
+    for i in db.ReadBd(dataIn= '2023-12-01',dataOut = '2023-12-10', IndexUser= 13):
         print(i)
 
+
+    # print(db.getNameTables("NAS"))
+    # print(db.getNameTables("VideoStorage"))
 
 
