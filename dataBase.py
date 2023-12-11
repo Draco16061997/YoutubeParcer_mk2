@@ -1,14 +1,13 @@
 import sqlite3
-import Youtube_parcer
-import folderParcer
 import get
 import config
 
 class dataBase():
-    def __init__(self, pathDb, YoutubeTable, NasTable):
+    def __init__(self, pathDb, YoutubeTable, NasTable, isNewVersion = True ):
         self.pathDb = pathDb
         self.table1 = YoutubeTable
         self.table2 = NasTable
+        self.isNewVersionBd = isNewVersion
 
     def createDb(self, path = None):
         if path == None:
@@ -154,42 +153,72 @@ class dataBase():
 
         data = self.getNameTables(FromTable)[0][1]
 
+        if self.isNewVersionBd:
+            # реализация ограничение поиска по периоду дат
 
-        # реализация ограничение поиска по периоду дат
+            if dataIn != None and dataOut != None and IndexUser != None:
+                where = f'WHERE NAS.Newsman = "{IndexUser}" OR NAS.Editor = "{IndexUser}" AND {data} BETWEEN "{dataIn}" AND "{dataOut}"'
+            elif dataIn != None and dataOut != None:
+                where = f'WHERE {data} BETWEEN "{dataIn}" AND "{dataOut}"'
+            else:
+                where = ''
 
-        if dataIn != None and dataOut != None and IndexUser != None:
-            where = f'WHERE VideoStorage.NameJurn = "{IndexUser}" OR VideoStorage.NameDirector = "{IndexUser}" AND {data} BETWEEN "{dataIn}" AND "{dataOut}"'
-        elif dataIn != None and dataOut != None:
-            where = f'WHERE {data} BETWEEN "{dataIn}" AND "{dataOut}"'
-        else:
-            where = ''
+            db = sqlite3.connect(path)
+            c = db.cursor()
 
+            c.execute(f'''SELECT Youtube.publishData, typeVideo.name, Youtube.chanel, Youtube.FileName, j.name, d.name,Youtube.key
 
+                                FROM {FromTable}
+                                LEFT JOIN {JoinTable} ON {FromTable}.key = {JoinTable}.key
 
-        db = sqlite3.connect(path)
-        c = db.cursor()
+                                LEFT JOIN typeVideo ON {JoinTable}.ClipType = typeVideo.id
+                                LEFT JOIN emploues AS j ON j.id = NAS.Newsman
+                                LEFT JOIN emploues AS d ON d.id = NAS.Editor
+                                {where} 
 
-        c.execute(f'''SELECT YoutubeVideo.data, typeVideo.name, YoutubeVideo.chanel, YoutubeVideo.name, j.name, d.name
+                                ORDER BY {data} DESC''')
 
-                    FROM {FromTable}
-                    LEFT JOIN {JoinTable} ON {FromTable}.key = {JoinTable}.key
-                    
-                    LEFT JOIN typeVideo ON {JoinTable}.TypeClip = typeVideo.id
-                    LEFT JOIN emploues AS j ON j.id = VideoStorage.NameJurn
-                    LEFT JOIN emploues AS d ON d.id = VideoStorage.NameDirector
-                    {where} 
+            rows = c.fetchall()
+            db.close()
+            return rows
+        elif not self.isNewVersionBd:
+            # реализация ограничение поиска по периоду дат
 
-                    ORDER BY data DESC''')
+            if dataIn != None and dataOut != None and IndexUser != None:
+                where = f'WHERE VideoStorage.NameJurn = "{IndexUser}" OR VideoStorage.NameDirector = "{IndexUser}" AND {data} BETWEEN "{dataIn}" AND "{dataOut}"'
+            elif dataIn != None and dataOut != None:
+                where = f'WHERE {data} BETWEEN "{dataIn}" AND "{dataOut}"'
+            else:
+                where = ''
 
-        rows = c.fetchall()
-        db.close()
-        return rows
+            db = sqlite3.connect(path)
+            c = db.cursor()
+
+            c.execute(f'''SELECT YoutubeVideo.data, typeVideo.name, YoutubeVideo.chanel, YoutubeVideo.name, j.name, d.name, YoutubeVideo.key
+
+                                FROM {FromTable}
+                                LEFT JOIN {JoinTable} ON {FromTable}.key = {JoinTable}.key
+
+                                LEFT JOIN typeVideo ON {JoinTable}.TypeClip = typeVideo.id
+                                LEFT JOIN emploues AS j ON j.id = VideoStorage.NameJurn
+                                LEFT JOIN emploues AS d ON d.id = VideoStorage.NameDirector
+                                {where} 
+
+                                ORDER BY {data} DESC''')
+
+            rows = c.fetchall()
+            db.close()
+            return rows
+
+        else: return None
+
 
 
 
 if __name__ == '__main__':
     # pass
-    db = dataBase(config.db, "YoutubeVideo","VideoStorage")
+    db = dataBase(config.db, "YoutubeVideo","VideoStorage", isNewVersion= False)
+    db2 = dataBase(config.db, "Youtube","NAS")
     # do = Youtube_parcer.Youtube(config.API_KEY2, config.DO)
     # nm = Youtube_parcer.Youtube(config.API_KEY2, config.NM)
     #
@@ -198,8 +227,8 @@ if __name__ == '__main__':
     # folder = folderParcer.Folder(config.path)
     #
     # db.writheBdList(folder.getListFiles())
-    for i in db.ReadBd(dataIn= '2023-12-01',dataOut = '2023-12-10', IndexUser= 13):
-        print(i)
+    for i in db2.ReadBd(dataIn= '2023-12-01', dataOut = '2023-12-10', IndexUser= 13):
+        print(f"{i} URL https://www.youtube.com/watch?v={i[6]}")
 
 
     # print(db.getNameTables("NAS"))
