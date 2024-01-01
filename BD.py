@@ -5,7 +5,6 @@ import config
 import folderParcer
 
 
-
 class DB():
     def __init__(self, path):
         self.path = path
@@ -91,6 +90,27 @@ class DB():
 
         print("Products table is create!")
 
+
+
+
+class AppEndYoutube(DB):
+    def writheBdYoutube(self, list):
+
+        count = 0
+
+        db = sqlite3.connect(self.path)
+        c = db.cursor()
+
+        for i in list:
+            c.execute(f"SELECT FileName FROM Youtube WHERE FileName = '{i[1]}'")
+            if c.fetchone() is None:
+                c.execute(f"INSERT INTO Youtube VALUES (?, ?, ?, ?)", (i[0], i[1], i[2],i[3]))
+                count +=1
+        db.commit()
+        print(f'UPDATE TABLE FROM Youtube ADD {count} RECORDS')
+
+class AppEndNAS(DB):
+
     def ReadEmplouse(self):
         db = sqlite3.connect(self.path)
         c = db.cursor()
@@ -123,45 +143,39 @@ class DB():
         return list
 
 
-class AppEndYoutube(DB):
-    def writheBdYoutube(self, list):
-
-        count = 0
-
-        db = sqlite3.connect(self.path)
-        c = db.cursor()
-
-        for i in list:
-            c.execute(f"SELECT FileName FROM Youtube WHERE FileName = '{i[1]}'")
-            if c.fetchone() is None:
-                c.execute(f"INSERT INTO Youtube VALUES (?, ?, ?, ?)", (i[0], i[1], i[2],i[3]))
-                count +=1
-        db.commit()
-        print(f'UPDATE TABLE FROM Youtube ADD {count} RECORDS')
-
-class AppEndNAS(DB):
-    def writeBdNas(self,list):
+    def writeBdNas(self,l):
         count = 0
         db = sqlite3.connect(self.path)
         c = db.cursor()
 
-        for i in list:
-
+        for i in l:
 
             nameDir = i[4]
             nameJurn = i[3]
             typVideo = i[2]
+            key = i[5]
 
             key = i[5].replace(" ", "")
             key = key.replace("@SynoEAStream", "")
             key = key.replace("@SynoResource", "")
+
+            if nameJurn != None:
+                nameJurn = get.getId(nameJurn,config.user)
+            if nameDir != None:
+                nameDir = get.getId(nameDir,config.user)
+            if typVideo != None:
+                typVideo = get.getId(typVideo, config.products)
+            if key == "v" or key == 'V':
+                key = 0
+            if key == "+v" or key == '+V':
+                key = 1
 
 
 
             c.execute(f"SELECT key FROM NAS WHERE key = ? AND FileName = ?", (key, i[1]))
             if c.fetchone() is None:
                 c.execute(f"INSERT INTO NAS VALUES (?, ?, ?, ?, ?, ?)",
-                          (i[0], i[1], i[2], i[3], i[4], i[5]))
+                          (i[0], i[1], typVideo, nameJurn, nameDir, key))
                 count += 1
 
             db.commit()
@@ -178,6 +192,13 @@ if __name__ == "__main__":
     a.CreateTableNas()
     y = AppEndYoutube("/Users/mikita/Main/PythonProjects/YoutubeParcer_mk2/testdb.db")
     n = AppEndNAS("/Users/mikita/Main/PythonProjects/YoutubeParcer_mk2/testdb.db")
+    a.CreateTableProduct()
+
+
+
+
+
+
 
     n.writeBdNas(folderParcer.Folder(config.path).getListFiles())
     for i in folderParcer.Folder(config.path).getListFiles():
