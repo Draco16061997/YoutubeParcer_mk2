@@ -163,9 +163,9 @@ class AppEndNAS(DB):
                 nameDir = get.getId(nameDir,config.user)
             if typVideo != None:
                 typVideo = get.getId(typVideo, config.products)
-            if key == "v" or key == 'V':
+            if key == "v" or key == 'V' or key == "v.ewc2" or key == 'V.ewc2' :
                 key = 0
-            if key == "+v" or key == '+V':
+            if key == "+v" or key == '+V'or key == "+v.ewc2" or key == '+V.ewc2':
                 key = 1
 
 
