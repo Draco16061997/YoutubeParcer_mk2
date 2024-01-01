@@ -91,8 +91,6 @@ class DB():
         print("Products table is create!")
 
 
-
-
 class AppEndYoutube(DB):
     def writheBdYoutube(self, list):
 
