@@ -60,10 +60,14 @@ class Youtube2(Youtube):
 
         # Извлечение продолжительности видео из ответа
 
+        if 'items' in response and response['items']:
+            duration = response['items'][0]['contentDetails']['duration'].replace("PT", "")
+            duration = duration.replace("M", " хв ")
+            duration = duration.replace("S", " c")
+        else:
+            duration = "N/A"  # Или какое-то другое значение по умолчанию
 
-        duration = response['items'][0]['contentDetails']['duration'].replace("PT","")
-        duration = duration.replace("M", " хв ")
-        duration = duration.replace("S", " c")
+
 
         return duration
 
@@ -100,6 +104,7 @@ class Youtube2(Youtube):
             youYubeList.append((dataPublish, title, titleChanel, key, dur))
             num +=1
             print(num)
+
 
         return youYubeList
 
