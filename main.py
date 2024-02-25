@@ -4,11 +4,11 @@ import config
 import folderParcer
 
 
-DO = Youtube_parcer.Youtube(config.API_KEY, config.DO).getlist()
-NM = Youtube_parcer.Youtube(config.API_KEY, config.NM).getlist()
-DP = Youtube_parcer.Youtube(config.API_KEY, config.DP).getlist()
+DO = Youtube_parcer.Youtube2(config.API_KEY, config.DO).getlist()
+NM = Youtube_parcer.Youtube2(config.API_KEY, config.NM).getlist()
+DP = Youtube_parcer.Youtube2(config.API_KEY, config.DP).getlist()
 
-writeYoutube = BD.AppEndYoutube(config.db)
+writeYoutube = BD.AppEndYoutube2(config.db)
 writeNAS = BD.AppEndNAS(config.db)
 
 
@@ -56,7 +56,7 @@ print("=====================================")
 
 print("Max")
 writeNAS.writeBdNas(getFilesTaylor)
- 
+
 print("=====================================")
 
 
