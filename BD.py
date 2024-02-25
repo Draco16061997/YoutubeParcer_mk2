@@ -179,15 +179,32 @@ class AppEndNAS(DB):
         print(f'UPDATE TABLE NAS ADD {count} RECORDS')
 
 
+class AppEndYoutube2(AppEndYoutube):
+    def writheBdYoutube(self, list):
+
+        count = 0
+
+        db = sqlite3.connect(self.path)
+        c = db.cursor()
+
+        for i in list:
+            c.execute(f"SELECT FileName FROM Youtube WHERE FileName = '{i[1]}'")
+            if c.fetchone() is None:
+                c.execute(f"INSERT INTO Youtube VALUES (?, ?, ?, ?)", (i[0], i[1], i[2], i[3]))
+                c.execute(f"INSERT INTO DURATION VALUES (?, ?)", (i[4], i[3]))
+                count += 1
+
+        db.commit()
+        print(f'UPDATE TABLE FROM Youtube ADD {count} RECORDS')
+
+
 if __name__ == "__main__":
     pass
 
-    a = DB(config.db)
-    # a.createDb()
-    a.CreateTableYoutube()
-    a.CreateTableProduct()
-    # a.CreateTableEmploues()
-    
+
+    add = AppEndYoutube2(config.db)
+
+    add.writheBdYoutube(Youtube_parcer.Youtube2(config.API_KEY2,config.DO).getlist())
 
 
 
