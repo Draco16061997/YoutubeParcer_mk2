@@ -108,14 +108,28 @@ class Youtube2(Youtube):
 
         return youYubeList
 
+class Youtube3(Youtube2):
+    def getViweLikeCount(self, video_id):
+        youtube = build('youtube', 'v3', developerKey=self.API_KEY)
+        video_response = youtube.videos().list(
+            part='statistics',
+            id=video_id
+        ).execute()
 
+        # Извлеките количество просмотров и количество лайков из ответа
+        view_count = video_response['items'][0]['statistics']['viewCount']
+        like_count = video_response['items'][0]['statistics']['likeCount']
+        list= (view_count, like_count)
+        return list
 
 
 
 if __name__ == '__main__':
-    do = Youtube2(config.API_KEY2, config.DO)
-    for i in do.getlist():
-        print(i)
+    # do = Youtube2(config.API_KEY2, config.DO)
+    # for i in do.getlist():
+    #     print(i)
+    do = Youtube3(config.API_KEY2, config.DO)
+    print(do.getViweLikeCount("lgy_XA70oEM")[0] +" Просмотров "+ do.getViweLikeCount("lgy_XA70oEM")[1] +" Like")
 
 
 
